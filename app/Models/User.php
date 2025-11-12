@@ -1,13 +1,15 @@
-<?php
+<?php 
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Model;
 
-class User extends Model
+class User extends Authenticatable
 {
-    use HasUuids;
+    use HasFactory, HasUuids;
+
     protected $fillable = [
         'full_name',
         'username',
@@ -17,6 +19,6 @@ class User extends Model
 
     public function contacts()
     {
-        return $this->hasMany(Contact::class,);
+        return $this->hasMany(Contact::class);
     }
 }

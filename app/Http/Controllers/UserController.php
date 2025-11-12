@@ -9,6 +9,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -40,12 +41,32 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
-    public function me(Request $request): UserResource
+    public function logout(Request $request): JsonResponse
     {
-        return new UserResource($request->user());
+        $user = $request->user();
+        $user->access_token = null;
+        $user->update();
+
+        return response()->json(['data' => ['logout' => true]]);
     }
 
-    public function update(UserUpdateRequest $request,): UserResource
+    public function me(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        return response()->json(
+            [
+                'data' => [
+                    'id' => $user->id,
+                    'full_name' => $user->full_name,
+                    'username' => $user->username,
+                    'created_at' => $user->created_at,
+                    'updated_at' => $user->updated_at,
+                ]
+            ]
+        );
+    }
+
+    public function updateMe(UserUpdateRequest $request,): UserResource
     {
         $data = $request->validated();
         $user = $request->user();
@@ -59,7 +80,6 @@ class UserController extends Controller
         if (isset($data['password'])) {
             $user->password = Hash::make($data['password']);
         }
-
 
         $user->update();
         return new UserResource($user);

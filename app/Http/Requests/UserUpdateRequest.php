@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Log;
 
 class UserUpdateRequest extends FormRequest
 {
@@ -11,6 +14,7 @@ class UserUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        Log::info($this->user()?->toArray() ?? []);
         return $this->user() !== null;
     }
 
@@ -24,7 +28,14 @@ class UserUpdateRequest extends FormRequest
         return [
             'full_name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255'],
-            'password' => ['required', 'string', 'min:6'],
+            'password' => ['string', 'min:6', 'nullable'],
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response([
+            'errors' => $validator->errors()
+        ], 422));
     }
 }
