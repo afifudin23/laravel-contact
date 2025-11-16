@@ -12,7 +12,8 @@ class Contact extends Model
     use HasUuids;
 
     protected $fillable = [
-        'full_name',
+        'first_name',
+        'last_name',
         'email',
         'phone',
         'user_id',
