@@ -121,7 +121,7 @@ class ContactController extends Controller
 
 
         return response()->json([
-            'data' => ContactResource::collection($contacts->items()),
+            'data' => $contacts->items(),
             'meta' => [
                 'total'        => $contacts->total(),
                 'per_page'     => $contacts->perPage(),
